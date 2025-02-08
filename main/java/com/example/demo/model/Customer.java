@@ -35,5 +35,4 @@ public class Customer extends MyModel {
 	private Timestamp createdDate;
 	
 	private Timestamp lastUpdate;
-	
 }

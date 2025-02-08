@@ -10,11 +10,8 @@ public class CustomerRequest extends FormRequest {
 	@NotEmpty
 	private String name;
 	
-	@NotEmpty
 	@Size(min=7,max=7)
 	private String postnumber;
-	
-	@NotEmpty
 
 	private String address;
 	

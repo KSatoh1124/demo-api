@@ -28,11 +28,17 @@ public class CustomerController {
 		this.customerService = customerService;
 	}
 	
+	
+	/**
+	* 利用者一覧取得
+	* @param クエリストリングス
+	* @return Jsonをシリアライズしたレスポンスパラメータ、ステータスコード
+	*/
 	@GetMapping("/customer")
-	public ResponseEntity<?> index(@RequestParam(required = false) String page) {
+	public ResponseEntity<?> index(@RequestParam (required = false) String page,@RequestParam (required = false) String serachParam) {
 		try {
-			var customers = this.customerService.index(page);
-			return new ResponseEntity<>(customers,HttpStatus.OK);
+			var customers = this.customerService.index(page,serachParam);
+			return new ResponseEntity<>(customers,HttpStatus.OK);	
 		} catch (Exception e) {
 			LogCreator.error(e.getMessage());
 			return new ResponseEntity<>("データの取得に失敗",HttpStatus.INTERNAL_SERVER_ERROR);

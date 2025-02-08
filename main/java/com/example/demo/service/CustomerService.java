@@ -1,4 +1,5 @@
 package com.example.demo.service;
+import java.util.HashMap;
 import java.util.Optional;
 
 import jakarta.transaction.Transactional;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.example.demo.model.Customer;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.request.CustomerRequest;
+import com.example.demo.specification.CustomerSpecification;
+import com.example.demo.utility.Common;
 
 @Service
 @Transactional
@@ -22,17 +25,20 @@ public class CustomerService {
 		this.customerRepository = clientRepository;
 	}
 	
-	public Page<Customer> index(String page) {
-		var currentPage = page == null? 0 : Integer.parseInt(page);
+	public Page<Customer> index(String request, String searchParam) {
+		var currentPage = request == null? 0 : Integer.parseInt(request);
 		var pagenate = PageRequest.of(currentPage, 5);
-		var customers = customerRepository.findAll(pagenate);
-		return customers;
+		
+		var criterias = new HashMap<String, String>();
+		if (searchParam != null) {
+			var jsonNode = Common.base64ToJsonNode(searchParam);
+			if (jsonNode != null) {
+				jsonNode.fields().forEachRemaining(nodeField -> criterias.put(nodeField.getKey(), nodeField.getValue().asText()));
+			}
+		}
+		
+		return customerRepository.findAll(CustomerSpecification.withCriteria(criterias),pagenate);
 	}
-	/**
-	* リクエストパラメータをもとに新規登録
-	* @param リクエストパラメータ
-	* @return 作成された利用者ID
-	*/
 	public Customer store(CustomerRequest request) {
 		var customerModel = new Customer();
 		customerModel.bindingParamer(request.toMap());
