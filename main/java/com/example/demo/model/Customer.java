@@ -3,6 +3,7 @@ package com.example.demo.model;
 import java.security.Timestamp;
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,6 +19,9 @@ public class Customer extends MyModel {
 	@GeneratedValue
 	private Integer id;
 	
+	@Column(name = "name_kana")
+	private String nameKana;
+	
 	private String name;
 	
 	private String postnumber;
@@ -32,7 +36,9 @@ public class Customer extends MyModel {
 	
 	private String remarks;
 	
+	@Column(name="created_date")
 	private Timestamp createdDate;
 	
+	@Column(name="last_update")
 	private Timestamp lastUpdate;
 }

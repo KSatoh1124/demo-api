@@ -35,9 +35,9 @@ public class CustomerController {
 	* @return Jsonをシリアライズしたレスポンスパラメータ、ステータスコード
 	*/
 	@GetMapping("/customer")
-	public ResponseEntity<?> index(@RequestParam (required = false) String page,@RequestParam (required = false) String serachParam) {
+	public ResponseEntity<?> index(@RequestParam (required = false) String page,@RequestParam (required = false) String serachParam,@RequestParam (required = false) String sort) {
 		try {
-			var customers = this.customerService.index(page,serachParam);
+			var customers = this.customerService.index(page,serachParam,sort);
 			return new ResponseEntity<>(customers,HttpStatus.OK);	
 		} catch (Exception e) {
 			LogCreator.error(e.getMessage());

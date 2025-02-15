@@ -1,4 +1,5 @@
 package com.example.demo.service;
+
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Customer;
@@ -25,19 +27,33 @@ public class CustomerService {
 		this.customerRepository = clientRepository;
 	}
 	
-	public Page<Customer> index(String request, String searchParam) {
-		var currentPage = request == null? 0 : Integer.parseInt(request);
-		var pagenate = PageRequest.of(currentPage, 5);
+	public Page<Customer> index(String page, String searchParam, String sort) {
+		var currentPage = page == null || page.isEmpty()? 0 : Integer.parseInt(page);
+		var displayPageCount = 5;
+		
+		var paginate =  PageRequest.of(currentPage, displayPageCount, Sort.by("id").ascending());
+		if (sort != null) {
+			if (!sort.isEmpty()) {
+				var sortJsonNode = Common.urlEncodedToJsonNode(sort);
+				var fieldName = sortJsonNode.get("fieldName");
+				var sortby = sortJsonNode.get("by");
+				if (sortby.asText().equals("asc")) {
+					paginate = PageRequest.of(currentPage, displayPageCount, Sort.by(fieldName.asText()).ascending());
+				} else {
+					paginate = PageRequest.of(currentPage, displayPageCount, Sort.by(fieldName.asText()).descending());
+				}
+			}
+		}
 		
 		var criterias = new HashMap<String, String>();
 		if (searchParam != null) {
-			var jsonNode = Common.base64ToJsonNode(searchParam);
+			var jsonNode = Common.urlEncodedToJsonNode(searchParam);
 			if (jsonNode != null) {
 				jsonNode.fields().forEachRemaining(nodeField -> criterias.put(nodeField.getKey(), nodeField.getValue().asText()));
 			}
 		}
 		
-		return customerRepository.findAll(CustomerSpecification.withCriteria(criterias),pagenate);
+		return customerRepository.findAll(CustomerSpecification.withCriteria(criterias),paginate);
 	}
 	public Customer store(CustomerRequest request) {
 		var customerModel = new Customer();

@@ -12,9 +12,11 @@ public class CustomerSpecification {
 	public static Specification<Customer> withCriteria(HashMap<String, String> criteriaItem) {
 		var id = Optional.ofNullable(criteriaItem.get("id")).orElse("");
 		var name = Optional.ofNullable(criteriaItem.get("name")).orElse("");
-	
+		var name_kana = Optional.ofNullable(criteriaItem.get("name_kana")).orElse("");
+		
 		return Specification
 				.where(withId(id))
+				.and(withNameKana(name_kana))
 				.and(withName(name));
 	}
 	
@@ -26,6 +28,14 @@ public class CustomerSpecification {
 		};
 	}
 	
+	//検索条件　かな名
+	private static Specification<Customer> withNameKana(String name_kana) {
+		return (root, query, cb) -> {
+			if (name_kana == "") return null;
+			return cb.like(root.get("name_kana"),"%" + name_kana + "%");
+		};
+	}
+
 	//検索条件　名前
 	private static Specification<Customer> withName(String name) {
 		return (root, query, cb) -> {

@@ -39,7 +39,7 @@ public final class Common {
 	* @param base64文字列
 	* @return JsonNode
 	*/
-	public static JsonNode base64ToJsonNode(String item) {
+	public static JsonNode urlEncodedToJsonNode(String item) {
 		var stringJson = URLDecoder.decode(item,StandardCharsets.UTF_8);
 		
 		var objectMapper = new ObjectMapper();
